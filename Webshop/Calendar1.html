@@ -1,0 +1,632 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <style type="text/css">
+        #calpanel {
+            width: 100%;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        td:hover {
+            border: 1px solid white;
+        }
+
+        tr {
+            height: 40px;
+        }
+
+        .div-float {
+            float: right;
+            width: 20px;
+            font-size: medium;
+        }
+
+        div {
+            color: white;
+        }
+
+        .calendarbutton {
+            background-color: black;
+            color: white;
+        }
+
+        .circle_green {
+            height: 50px;
+            width: 50px;
+            border-radius: 50%;
+            background-color: greenyellow;
+            display: inline-block;
+        }
+        a{
+            text-decoration: none;
+        }
+    </style>
+    <script type="text/javascript">
+        var mon;
+        var year;
+        var day;
+        var totaldays;
+        var monIndex;
+
+        //get the current time
+        function startTime() {
+            var nowtime = new Date();
+            var h = nowtime.getHours();
+            var gm = nowtime.getMinutes();
+            var gs = nowtime.getSeconds();
+            //add "0" before the numbers if the numbers are less than 10
+            if (h < 10) {
+                h = "0" + h;
+            }
+            if (gm < 10) {
+                gm = "0" + gm;
+            }
+            if (gs < 10) {
+                gs = "0" + gs;
+            }
+            //show the current time
+            var currenttime = h + ":" + gm + ":" + gs;
+            document.getElementById("currenttime").innerHTML = currenttime;
+            //delay 0,5 second
+            var t = setTimeout(startTime, 500);
+        }
+
+        //get current date
+        function getcurrentdate() {
+            var nowtime = new Date();
+            var y = nowtime.getFullYear();
+            var mth = nowtime.getMonth();
+            var d = nowtime.getDay();
+            var date = nowtime.getDate();
+            //creat an array of the 12 months
+            var months = new Array("january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december");
+            //create an array of the 7 days
+            var days = new Array("sonday", "manday", "thursday", "wendsday", "tuesday", "friday", "satday");
+            //find the day and month with their indexes in the array, and show
+            var currentdate = days[d] + " " + date + " " + months[mth] + " " + y;
+            return currentdate;
+        }
+
+        function getcurrentmonthyear() {
+            //create a new date object
+            var nowtime = new Date();
+            //get the current year, month and day
+            var y = nowtime.getFullYear();
+            var mth = nowtime.getMonth();
+            var d = nowtime.getDay();
+            var date = nowtime.getDate();
+            //creat an array of the 12 months
+            var months = new Array("january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december");
+            //get the month and year
+            var monthyear = months[mth] + " " + y;
+            return monthyear;
+        }
+
+        //split the month and year text
+        function splitMonYear() {
+            //get the chosen month and year
+            monyear = document.getElementById("chosenMon").innerHTML;
+            //get the month and year seperately
+            mon = (monyear.split(" "))[0].trim();
+            year = (monyear.split(" "))[1].trim();
+        }
+
+        //get month index
+        function monIndex() {
+            splitMonYear();
+            var months = new Array("january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december");
+            //find the month index
+            for (m = 0; m < months.length; m++) {
+                if (mon == months[m]) {
+                    monIndex = m;
+                }
+            }
+        }
+
+        //find the total days of the chosen month
+        function totalDaysChosenMon(monIndex, year) {
+            //if it is a big month
+            if (monIndex == 0 || monIndex == 2 || monIndex == 4 || monIndex == 6 || monIndex == 7 || monIndex == 9 || monIndex == 11) {
+                totaldays = 31;
+            }
+            //if it is feburary in a leap year
+            else if (monIndex == 1 && year % 400 == 0) {
+                totaldays = 29
+            }
+            //if it is a feburary in a normal year
+            else if (monIndex == 1 && year % 400 != 0) {
+                totaldays = 28
+            }
+            //if it is a little month
+            else {
+                totaldays = 30;
+            }
+            return totaldays;
+        }
+
+        //find the total days of the last month of the chosen month
+        function totalDaysLastMon() {
+            //get the chosen month and year
+            splitMonYear();
+            var months = new Array("january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december");
+            //find the index of last month of the chosen month
+            for (m = 0; m < months.length; m++) {
+                //if it is not january, the index is the index of the chosen month minus one
+                if (mon == months[m] && mon != "january") {
+                    monIndex = m - 1;
+                }
+                //if it is December
+                else if (mon == months[m] && mon == "december") {
+                    monIndex = 11;
+                    year = year - 1;
+                }
+            }
+            return totalDaysChosenMon(monIndex, year);
+        }
+
+        //find the total days of the last month of the chosen month
+        function totalDaysNextMon() {
+            //get the chosen month and year
+            splitMonYear();
+            var months = new Array("january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december");
+            //find the index of last month of the chosen month
+            for (i = 0; i < months.length; i++) {
+                //if it is not December
+                if (month == months[i] && month != "december") {
+                    monIndex = i + 1;
+                }
+                //if it is December
+                else if (month == months[i] && month == "december") {
+                    monIndex = 0;
+                    year = year + 1;
+                }
+            }
+            return totalDaysChosenMon(monIndex, year);
+        }
+
+        //find the day of the first day of the chosen month
+        function firstDay(monIndex, year) {
+            //create a new date object
+            var today = new Date();
+            today.setFullYear(year);
+            today.setMonth(monIndex);
+            //set the first day of the month as the chosen date
+            today.setDate(1);
+            //find which day the first day of the month is
+            day = today.getDay();
+            return day;
+        }
+
+        //map the dates of the chosen month
+        function datesChosenMon(day, totaldays) {
+            date = 1;
+            //find the cell for each day and show the date on the cell
+            for (i = day; i < day + totaldays; i++) {
+                document.getElementById("cell" + i).innerHTML = date;
+                date++;
+            }
+        }
+
+        //shown the last dates of the last month in the vacant behind the dates of the chosen month
+        //the february in a leap year, there are 29 days
+        function datesNexMon() {
+            //shown the first dates of the next month in the cells behind the dates of the chosen month
+            var dateNexMon = 1;
+            for (j = i; j < 42; j++) {
+                document.getElementById("cell" + j).innerHTML = dateNexMon;
+                dateNexMon++;
+            }
+        }
+
+        //shown the last dates of the last month in the cells in front of the dates of the chosen month
+        function datesLastMon(day, totaldays) {
+            for (l = 0; l < day; l++) {
+                document.getElementById("cell" + l).innerHTML = totaldays - day + l + 1;
+            }
+        }
+
+        //map dates for the chosen last months
+        function setDates() {
+            //get the day of the first day of the chosen month
+            day = firstDay(monIndex, year);
+            //get the total days of the chosen month
+            totaldays = totalDaysChosenMon(monIndex, year);
+            //set the dates of the chosen month
+            datesChosenMon(day, totaldays);
+            //set the first dates of the next month in the cells behind the chosen month
+            datesNexMon();
+            //get the total days of the last month of the chosen month
+            totaldaysLastMon = totalDaysLastMon();
+            //set the last dates of the last month in the cells in front of the chosen month
+            datesLastMon(day, totaldaysLastMon);
+            //focuses today
+            var presentDay = new Date();
+            var presentMonIndex = presentDay.getMonth();
+
+            //recover monIndex from the index for last month
+            monIndex = monIndex + 1
+            //mark the days of the last and next month
+            datesColorStyle();
+            //focus and mark today
+            focusToday();
+        }
+
+        //draw a dot, the function is not used
+        function drawDot() {
+            var canvas = document.getElementById("myCanvas");
+            if (canvas.getContext) {
+                var context = canvas.getContext("2d");
+                context.fillStyle = "##FFFAFA";
+                context.beginPath();
+                context.arc(300, 300, 75, 0, Math.PI * 2, true);
+                context.closePath();
+                context.fill();
+            }
+        }
+
+        //mark notes with dots, the function is not in use
+        function setBorders() {
+
+            //find the days having notes
+            for (var i = 0; i < localStorage.length; i++) {
+                //find the notes from local storage
+                var key = localStorage.key(i);
+                var value = localStorage[key];
+                //check if there is note on this day
+                if (key == document.getElementById("cell" + i).innerHTML + " " + document.getElementById("chosenMon").innerHTML) {
+                    //if there is note, load up the dot picture to the cell
+                    document.getElementById("cell" + i).style.border = "2px solid white";
+                }
+            }
+        }
+
+        //get the last month of the selected month
+        function lastMonIndexes() {
+            //get the chosen month and year
+            splitMonYear();
+            //convert the string to int
+            year = parseInt(year);
+            //define an array of the monthes
+            var months = new Array("january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december");
+            //get the index of the last month of the chosen month
+            for (m = 0; m < months.length; m++) {
+                if (mon == months[m] && mon != "january") {
+                    monIndex = m - 1;
+                }
+                else if (mon == months[m] && mon == "january") {
+                    monIndex = 11;
+                    year = year - 1;
+                }
+            }
+            var monthyear = months[monIndex] + " " + year;
+            document.getElementById("chosenMon").innerHTML = monthyear;
+        }
+
+        //get the next month of the selected month
+        function nextMonIndexes() {
+            //get the month and year of the chosen month
+            splitMonYear();
+            //convert the string to int
+            year = parseInt(year);
+            //define an array of the monthes
+            var months = new Array("january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december");
+            //get the index of the next month of the chosen month
+            for (n = 0; n < months.length; n++) {
+                if (mon == months[n] && mon != "december") {
+                    monIndex = n + 1;
+                }
+                else if (mon == months[n] && mon == "december") {
+                    monIndex = 0;
+                    year = year + 1;
+                }
+            }
+            //get the month and year of the next month of the chosen month
+            var monthyear = months[monIndex] + " " + year;
+            document.getElementById("chosenMon").innerHTML = monthyear;
+        }
+
+        //set the dates on the cells when "<" is clicked
+        function lastMon() {
+            //get the month and year of the last month
+            lastMonIndexes();
+            //clean the old focus
+            blurToday();
+            //set the dates in the cells
+            setDates();
+
+        }
+
+        //set the dates in the cells when ">" is clicked
+        function nextMon() {
+            //find the month and year of the next month of the chosen month
+            nextMonIndexes();
+            //clean the old focus
+            blurToday();
+            //set the dates in the cells
+            setDates();
+
+        }
+
+        //mark the dates in different months with different colors
+        function datesColorStyle() {
+            //clean the old gray color
+            for (b = 0; b < 7; b++) {
+                document.getElementById("cell" + b).style.color = "white";
+            }
+            //clean the old gray color
+            for (e = 28; e < 42; e++) {
+                document.getElementById("cell" + e).style.color = "white";
+            }
+            //clean the old gray color
+            for (e = 7; e < 28; e++) {
+                document.getElementById("cell" + e).style.color = "white";
+            }
+            //mark the dates of the last month in gray
+            for (b = 0; b < 7; b++) {
+                if (parseInt(document.getElementById("cell" + b).innerHTML) > 15) {
+                    document.getElementById("cell" + b).style.color = "gray";
+                }
+            }
+            //mark the dates of the next month in gray
+            for (e = 28; e < 42; e++) {
+                if (parseInt(document.getElementById("cell" + e).innerHTML) < 15) {
+                    document.getElementById("cell" + e).style.color = "gray";
+                }
+            }
+        }
+
+        //focus today everytime when the calendar is loaded
+        function focusToday() {
+            //define today
+            var focusDay = new Date();
+            //find the day of today
+            var theday = focusDay.getDay();
+            //find the date of today
+            var thedate = focusDay.getDate();
+            //get the chosen year
+            splitMonYear();
+            //if the chosen year is this year
+            if (year == focusDay.getFullYear()) {
+                //if the chosen month is the present month
+                if (focusDay.getMonth() == monIndex) {
+                    //find the day of the first day of the month
+                    focusDay.setDate(1);
+                    var thefirstday = focusDay.getDay();
+                    //find the cell number of today
+                    var celltoday = thedate + thefirstday - 1;
+                    //focus today
+                    document.getElementById("cell" + celltoday).focus();
+                    //mark the focused cell
+                    document.getElementById("cell" + celltoday).style.backgroundColor = "orange";
+                }
+                //if the month is the next month of the chosen month
+                else if (focusDay.getMonth() == monIndex + 1) {
+                    //check if today is on the calendar panel
+                    for (cell = 0; cell < 7; cell++) {
+                        if (document.getElementById("cell" + cell).innerHTML == celltoday) {
+                            //focus today
+                            document.getElementById("cell" + celltoday).focus();
+                            //mark the focused cell
+                            document.getElementById("cell" + celltoday).style.backgroundColor = "orange";
+                        }
+                    }
+                }
+                //if the month is the last month of the chosen month
+                else if (focusDay.getMonth() == monIndex - 1) {
+                    //check if today is on the calendar panel
+                    for (cell = 28; cell < 42; cell++) {
+                        if (document.getElementById("cell" + cell).innerHTML == celltoday) {
+                            //focus today
+                            document.getElementById("cell" + celltoday).focus();
+                            //mark the focused cell
+                            document.getElementById("cell" + celltoday).style.backgroundColor = "orange";
+                        }
+                    }
+                }
+                //if the month is the next month of december
+                else if (focusDay.getMonth() == 11 && monIndex == 0) {
+                    //check if today is on the calendar panel
+                    for (cell = 28; cell < 42; cell++) {
+                        if (document.getElementById("cell" + cell).innerHTML == celltoday) {
+                            //focus today
+                            document.getElementById("cell" + celltoday).focus();
+                            //mark the focused cell
+                            document.getElementById("cell" + celltoday).style.backgroundColor = "orange";
+                        }
+                    }
+                }
+                //if the month is the last month of the january
+                else if (focusDay.getMonth() == 0 && monIndex == 11) {
+                    //check if today is on the calendar panel
+                    for (cell = 0; cell < 7; cell++) {
+                        if (document.getElementById("cell" + cell).innerHTML == celltoday) {
+                            //focus today
+                            document.getElementById("cell" + celltoday).focus();
+                            //mark the focused cell
+                            document.getElementById("cell" + celltoday).style.backgroundColor = "orange";
+                        }
+                    }
+                }
+            }
+        }
+
+        //remove the focus on today
+        function blurToday() {
+
+            //set bakgroundColor for the cells
+            for (cn = 0; cn < 42; cn++) {
+                if (document.getElementById("cell" + cn).style.backgroundColor == "orange") {
+                    document.getElementById("cell" + cn).blur();
+                    document.getElementById("cell" + cn).style.backgroundColor = "black";
+                }
+            }
+        }
+
+        //load up the time table
+        function loadupTimeTb(cell) {
+            //find the cellid correspondent to the cell clicked
+            //get the cellindex and rowindex
+            x = cell.cellIndex;
+            y = cell.parentNode.rowIndex;
+            //get the cellid
+            //if it is the row nr 2
+            if (y == 1) {
+                cellid = "cell" + x;
+            }
+            //if it is a higher row
+            else if (y > 1) {
+                var number = (y - 2) * 7 + x;
+                cellid = "cell" + number;
+            }
+
+            //determine it is not a date of last month or next month
+            if (document.getElementById(cellid).style.color != "gray") {
+                //use the cellid to find the correspondent date, and put the date information in the query string
+                //window.location.href("/Timetable.html?" + " " + document.getElementById(cellid).innerHTML + " " + mon + " " + year);
+               // window.location.href("Timetable.html?" + document.getElementById(cellid).innerHTML + mon + year);
+               // alert(document.getElementById(cellid).parentNode.innerText);
+                window.location.assign("Timetable.html?" + document.getElementById(cellid).parentNode.innerText + mon + year);
+            }
+        }
+
+        function getColor(cell) {
+            alert(cell.cellIndex);
+        }
+    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <meta charset="utf-8" />
+</head>
+<body onload="startTime()">
+    <div class="row">
+
+        <div style="background-color: black; width: 450px">
+            <h3>
+                Calendar
+            </h3>
+
+            <div id="currenttime">
+
+            </div>
+            <hr />
+
+            <div id="currentdate">
+                <script>
+                    //get the current date, month and year and show
+                    currentdate = getcurrentdate();
+                    document.getElementById("currentdate").innerHTML = currentdate;
+                </script>
+            </div>
+            <hr />
+            <div id="findMon">
+                <div id="chosenMon" class="div-inline"></div>
+                <script type="text/javascript">
+                    //get and show the current month and year
+                    currentmonthyear = getcurrentmonthyear();
+                    document.getElementById("chosenMon").innerHTML = currentmonthyear;
+                </script>
+            </div>
+
+            <div>
+                <table id="calpanel">
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th onclick="lastMon()"><</th>
+                        <th onclick="nextMon()">></th>
+                    </tr>
+                    <tr style="text-align: left">
+                        <th id="so"></th>
+                        <th id="ma"></th>
+                        <th id="tu"></th>
+                        <th id="we"></th>
+                        <th id="th"></th>
+                        <th id="fr"></th>
+                        <th id="sa"></th>
+                    </tr>
+                    <tr>
+                        <td onclick="getColor(this)"><a id="cell0" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell1" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell2" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell3" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell4" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell5" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell6" href="#"></a></td>
+
+                    </tr>
+                    <tr>
+                        <td onclick="loadupTimeTb(this)"><a id="cell7" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell8" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell9" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell10" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell11" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell12" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell13" href="#"></a></td>
+
+                    </tr>
+                    <tr>
+                        <td onclick="loadupTimeTb(this)"><a id="cell14" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell15" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell16" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell17" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell18" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell19" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell20" href="#"></a></td>
+                    </tr>
+                    <tr>
+                        <td onclick="loadupTimeTb(this)"><a id="cell21" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell22" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell23" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell24" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell25" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell26" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell27" href="#"></a></td>
+                    </tr>
+                    <tr>
+                        <td onclick="loadupTimeTb(this)"><a id="cell28" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell29" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell30" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell31" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell32" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell33" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell34" href="#"></a></td>
+                    </tr>
+                    <tr>
+                        <td onclick="loadupTimeTb(this)"><a id="cell35" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell36" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell37" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell38" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell39" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell40" href="#"></a></td>
+                        <td onclick="loadupTimeTb(this)"><a id="cell41" href="#"></a></td>
+                    </tr>
+                </table>
+                <script>
+                    document.getElementById("so").innerHTML = "su";
+                    document.getElementById("ma").innerHTML = "ma";
+                    document.getElementById("tu").innerHTML = "tu";
+                    document.getElementById("we").innerHTML = "we";
+                    document.getElementById("th").innerHTML = "th";
+                    document.getElementById("fr").innerHTML = "fr";
+                    document.getElementById("sa").innerHTML = "sa";
+                    //get mon and year variables
+                    splitMonYear();
+                    //get monIndex
+                    monIndex();
+                    //set the dates in the cells
+                    setDates();
+                                //add onclick event to the cells to load up time table
+                                 //setBorders();
+                    
+                </script>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

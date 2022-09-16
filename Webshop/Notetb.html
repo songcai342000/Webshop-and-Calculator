@@ -1,0 +1,412 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <style type="text/css">
+        table {
+            background-color: #e6e6fa;
+            width: 500px;
+            padding: 20px;
+        }
+       .td-left{width: 100px; font-size:medium; border-bottom: 1px dotted dodgerblue;}
+       .td-right{width: 200px; font-size:medium; border-bottom: 1px dotted dodgerblue;}
+       .tr{
+           height: 60px;
+           vertical-align: bottom;
+           width: 500px;           
+       }
+       
+    </style>
+
+    <script type="text/javascript">
+        /*document.getElementById("hoursF").addEventListener("select", getSelectedTxt());
+        function getSelectedTxt()
+        {
+            document.getElementById("hoursFS").innerHTML = "test";
+        }*/
+
+        //get the selected text shown on the related span
+        function getSelectedTxt(id) {
+            //get the chosen time
+            var spanId = id + "S";
+            //get the select
+            var sel = document.getElementById(id);
+            //get the selected index
+            var selIndx = sel.selectedIndex;
+            //get the selected text
+            var selTxt = sel.options[selIndx].text;
+            document.getElementById(spanId).innerHTML = selTxt;
+        }
+
+        /* 
+        */
+
+        //get the url of the TimeTb.html with query string
+        function returnTimeTb() {
+            //get the url of the previous page
+            presentUrl = location.search;
+            timeInforArray = presentUrl.split(" ");
+            originalUrl = timeInforArray[0] + "" + timeInforArray[3] + "" + timeInforArray[4] + "" + timeInforArray[5];
+            //test
+            //document.getElementById("noteTxt").value = originalUrl;
+
+            //return to the previous page
+            // window.location.href("/Timetable.html?" + originalUrl);
+             window.location.assign("Timetable.html?" + presentUrl.substring(1));
+        }
+
+        //cancel the note
+        function calNote()
+        {
+            returnTimeTb();
+        }
+
+        //save the note
+        function saveNote()
+        {
+            
+            //if the field is empty set the value as 00
+            var hoursFS;
+            var minutesFS;
+            var hoursTS;
+            var minutesTS;
+            if (document.getElementById("hoursF").selectedIndex == 0)
+            {
+                hoursFS = "";
+            }
+            else
+            {
+                hoursFS = document.getElementById("hoursFS").innerHTML;
+            }
+            if (document.getElementById("minutesF").selectedIndex == 0) {
+                minutesFS = "";
+            }
+            else
+            {
+                minutesFS = document.getElementById("minutesFS").innerHTML;
+            }
+            if (document.getElementById("hoursT").selectedIndex == 0) {
+                hoursTS = "";
+            }
+            else
+            {
+                hoursTS = document.getElementById("hoursTS").innerHTML
+            }
+            if (document.getElementById("minutesT").selectedIndex == 0) {
+                minutesTS = "";
+            }
+            else
+            {
+                minutesTS = document.getElementById("minutesTS").innerHTML;
+            }
+            //set a localstorage item using date as the key, the key contains hour, minute, date, month and year
+            time = hoursFS + ":" + minutesFS + "-" + hoursTS + ":" + minutesTS + "  " + location.search.substring(1);
+
+            /*
+            for (l = 0; i < localStorage.length; l++)
+            {
+              localStorage.removeItem(localStorage.key(i));
+            }
+            
+            //save the note
+            //save the date, time span and note
+            if (location.search != null && location.search != "") {
+                thenote = document.getElementById("noteTxt").value;
+            }*/
+            if (minutesFS != "" && hoursFS != "" && minutesTS != "" && hoursTS != "") {
+                //test
+                //document.getElementById("noteTxt").value = time;
+                var thenote = document.getElementById("noteTxt").value;
+                localStorage.setItem(time, thenote);
+                //return to the calendar page
+                returnTimeTb();
+            }
+        }
+
+
+        //get the present time
+        var today;
+        var todayDate;
+        var todayMon;
+        var todayH;
+        var todayM;
+        var todayY;
+        //month index of the chosen month
+        var monIndex;
+        function checkPresentTime()
+        {
+            //creat a date object
+            today = new Date();
+            //find the date of today
+            todayDate = today.getDate();
+            //find the month of today
+            todayMon = today.getMonth();
+            //find the chosen year 
+            todayY = today.getFullYear();
+            //find the current hour
+            todayH = today.getHours();
+            //find the current minute
+            todayM = today.getMinutes();
+            //get the time information of the chosen time from query string
+            chosenDate = location.search.split(" ");
+            //get chosen hour
+            chosenH = chosenDate[1];
+            //get chosen month
+            chosenM = chosenDate[4];
+            //find the month index of the chosen month
+            var months = new Array("january", "feburary", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december");
+            for (i = 0; i <= 11; i++)
+            {
+                if (chosenM == months[i])
+                {
+                    monIndex = i;
+                }
+            }
+            //test
+            //document.getElementById("noteTxt").value = chosenDate[3];
+            //check if the chosen day is today
+            if (todayDate == chosenDate[3] && monIndex == todayMon && todayY == chosenDate[5])
+            {
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        //the clock of the day begins with the clock number in the query string
+        function avaiableH() {
+            //check if the chosen day is today
+            var isToday = checkPresentTime();
+            //test
+            //document.getElementById("noteTxt").value = isToday;
+            var x = document.getElementById("hoursF");
+            //it is today
+            if (isToday == true)
+            {
+                //get present hour
+                var today = new Date();
+                var todayH = today.getHours();
+                //load dynamically the clocks to the dropdown list
+                for (i = todayH; i < 26; i++)
+                {
+                    var option = document.createElement("option");
+                    if (i == 0) {
+                        option.text = "";
+                    }
+                    else if (i < 11 && i > 0) {
+                        option.text = "0" + (i - 1).toString();
+                    }
+                    else
+                    {
+                        option.text = (i - 1).toString();
+                    }
+                    x.add(option);
+                }
+            }
+            //it is not today
+            else
+            {
+                //load dynamically the clocks to the dropdown list
+                for (i = 0; i < 26; i++)
+                {
+                    var option = document.createElement("option");
+                    if (i == 0) {
+                        option.text = "";
+                    }
+                    else if (i < 11 && i > 0) {
+                        option.text = "0" + (i - 1).toString();
+                    }
+                    else {
+                        option.text = (i - 1).toString();
+                    }
+                    x.add(option);
+                }
+            }
+           
+        }
+
+        //the available minutes of the begin hour of the day
+        function avaiableM() {
+            //check the present hour and minute
+            var isToday = checkPresentTime();
+            //get the dropdownlist object
+            var x = document.getElementById("minutesF");
+            //test
+            //document.getElementById("noteTxt").value = isToday;
+            //check if the chosen day is today
+            if (isToday == true) {
+                //create an date object
+                var today = new Date();
+                //find the current minute
+                var minute = today.getMinutes();
+                //find the current hour
+                var hour = today.getHours();
+                if (location.search.split(" ")[1] == hour) {
+                    //load dynamically the minutes to the dropdown list
+                    for (i = minute; i < 62; i++) {
+                        var option = document.createElement("option");
+                        if (i == 0) {
+                            option.text = "";
+                        }
+                        else if (i < 11 && i > 0) {
+                            option.text = "0" + (i - 1).toString();
+                        }
+                        else {
+                            option.text = (i - 1).toString();
+                        }
+                        x.add(option);
+                    }
+                }
+            }
+            else {
+                   
+                //load dynamically the 60 minutes to the dropdown list
+                for (i = 0; i < 62; i++) {
+                    var option = document.createElement("option");
+                    if (i == 0)
+                    {
+                        option.text = "";
+                    }
+                    else if (i < 11 && i > 0) {
+                        option.text = "0" + (i - 1).toString();
+                    }
+                    else {
+                        option.text = (i - 1).toString();
+                    }
+                    x.add(option);
+                }
+            }
+
+        }
+
+    </script>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+	<meta charset="utf-8" />
+</head>
+<body>
+    <table>
+    <tr class="tr">
+    <td class="td-left" id="fromL">From:</td><td class="td-right" id="fromR">
+     Hour
+     <br />
+        <select id="hoursF" onchange="getSelectedTxt('hoursF')">
+           
+        </select><span id="hoursFS"/>
+        </td>
+ <td class="td-right">Minute <br />
+    <select id="minutesF" onchange="getSelectedTxt('minutesF')">
+                                                                        
+    </select><span id="minutesFS"/>
+       
+        </td></tr>
+    <tr class="tr"><td class="td-left">Note:</td><td class="td-right" id="inputNote"><input name="note" id="noteTxt" class="form-control" style="height: 60px; width: 500px;"/></td><td class="td-right"></td>
+    </tr>
+    <tr class="tr"><td class="td-left">To:</td><td class="td-right">
+        Hour<br/>
+                                                        <select id="hoursT" onchange="getSelectedTxt('hoursT')">
+                                                            <option value=""></option>
+                                                            <option value="00">00</option>
+                                                            <option value="01">01</option>
+                                                            <option value="02">02</option>
+                                                            <option value="03">03</option>
+                                                            <option value="04">04</option>
+                                                            <option value="05">05</option>
+                                                            <option value="06">06</option>
+                                                            <option value="07">07</option>
+                                                            <option value="08">08</option>
+                                                            <option value="09">09</option>
+                                                            <option value="10">10</option>
+                                                            <option value="11">11</option>
+                                                            <option value="12">12</option>
+                                                            <option value="13">13</option>
+                                                            <option value="14">14</option>
+                                                            <option value="15">15</option>
+                                                            <option value="16">16</option>
+                                                            <option value="17">17</option>
+                                                            <option value="18">18</option>
+                                                            <option value="19">19</option>
+                                                            <option value="20">20</option>
+                                                            <option value="21">21</option>
+                                                            <option value="22">22</option>
+                                                            <option value="23">23</option>
+                                                            <option value="24">24</option>
+                                                       </select><span id="hoursTS" /></td><td class="td-right">
+ Minute <br />    
+        <select id="minutesT" onchange="getSelectedTxt('minutesT')">
+            <option value=""></option>
+            <option value="00">00</option>
+    <option value="01">01</option>
+    <option value="02">02</option>
+    <option value="03">03</option>
+    <option value="04">04</option>
+    <option value="05">05</option>
+    <option value="06">06</option>
+    <option value="07">07</option>
+    <option value="08">08</option>
+    <option value="09">09</option>
+    <option value="10">10</option>
+    <option value="11">11</option>
+    <option value="12">12</option>
+    <option value="13">13</option>
+    <option value="14">14</option>
+    <option value="15">15</option>
+    <option value="16">16</option>
+    <option value="17">17</option>
+    <option value="18">18</option>
+    <option value="19">19</option>
+    <option value="20">20</option>
+    <option value="21">21</option>
+    <option value="22">22</option>
+    <option value="23">23</option>
+    <option value="24">24</option>
+
+    <option value="25">25</option>
+    <option value="26">26</option>
+    <option value="27">27</option>
+    <option value="28">28</option>
+    <option value="29">29</option>
+    <option value="30">30</option>
+    <option value="31">31</option>
+    <option value="32">32</option>
+    <option value="33">33</option>
+    <option value="34">34</option>
+    <option value="35">35</option>
+    <option value="36">36</option>
+    <option value="37">37</option>
+    <option value="38">38</option>
+    <option value="39">39</option>
+    <option value="40">40</option>
+    <option value="41">41</option>
+    <option value="42">42</option>
+    <option value="43">43</option>
+    <option value="44">44</option>
+    <option value="45">45</option>
+    <option value="46">46</option>
+    <option value="47">47</option>
+    <option value="48">48</option>
+    <option value="49">49</option>
+    <option value="50">50</option>
+    <option value="51">51</option>
+    <option value="52">52</option>
+    <option value="53">53</option>
+    <option value="54">54</option>
+    <option value="55">55</option>
+    <option value="56">56</option>
+    <option value="57">57</option>
+    <option value="58">58</option>
+    <option value="59">59</option>
+    <option value="60">60</option>
+</select><span id="minutesTS" /></td></tr>
+    <tr class="tr"><td class="td-left"></td><td id="cancelTd" class="td-right" onclick="calNote()"><a href="#">Cancel</a></td><td id="saveTd" class="td-right" onclick="saveNote()"><a href="#">Save</a></td></tr></table>
+<script>
+    //load hours for hoursF
+    avaiableH();
+    //load minutes for minutesF
+    avaiableM();
+</script>
+
+</body>
+</html>

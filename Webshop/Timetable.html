@@ -1,0 +1,450 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style type="text/css">
+        tr {
+            margin: 0px 0px 0px 0px;
+        }
+
+        td {
+            height: 30px;
+            margin: 0px 0px 0px 0px;
+        }
+        .overlay {
+            position: absolute;
+            display: none;
+            width: 40%;
+            left: 0;
+            background-color: rgba(0, 0, 255, 0.2);
+            cursor: pointer;
+        }
+       
+    </style>
+    <script>
+        //mark the past hours
+        function markPastH() {
+            //creat a date object
+            var today = new Date();
+            //find the date of today
+            var todayDate = today.getDate();
+            //find the month of today
+            var todayMon = today.getMonth();
+            //find the chosen year 
+            var todayY = today.getFullYear();
+            //find the current hour
+            var todayH = today.getHours();
+            //get the time information of the chosen time from query string
+            var chosenDate = location.search.split(" ");
+            //get chosen Month
+            var chosenM = chosenDate[2];
+            //find the month index of the chosen month
+            var months = new Array("january", "feburary", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december");
+            for (i = 0; i <= 11; i++) {
+                if (chosenM == months[i]) {
+                    monIndex = i;
+                }
+            }
+            //get rows in the table
+            rows = document.getElementsByTagName("tr");
+            //check if the chosen day is today
+            if (todayDate == chosenDate[1] && monIndex == todayMon && todayY == chosenDate[3]) {
+               
+                //deactivate the past hours
+                for (i = 0; i < rows.length; i++)
+                {
+                    if (i < todayH - 1)
+                    {
+                        //mark the past hours
+                        document.getElementById(rows[i].id).style.backgroundColor = "blue";
+                    }
+                }
+              
+            }
+        }
+
+        //lade up note table for a certain time
+        function noteTb(cell) {
+            //use row index to find the clock number 
+            var cl = cell.parentNode.rowIndex + 1;
+            //test
+            document.getElementById("n01").innerHTML = cl;
+            if (c1 < 10)
+            {
+                c1 = "0" + c1;
+            }
+            
+            //get the date
+            Date = getDate();
+            //load the note table, send the time information with querystring
+            //window.location.href("/Notetb.html?" + " " + cl.toString() + " " + Date);
+            window.location.assign("Notetb.html?" + location.search.substring(1));
+        }
+
+        //get the date
+        function getDate()
+        {
+            //get the date from query string
+            return location.search.substring(1);
+        }
+
+        //get the list of notes of the date
+        /* var theNotes;
+        function daysNotes(date)
+        {
+            //create an empty array to store the notes on a certain date
+            theNotes = new Array();
+            //check if the localStorage include the keys which made with the chosen date
+            for (i = 0; i < localStorage.length; i++)
+            {
+                
+                //split the key string
+                hourdate = localStorage.key(i).split(" ");
+                //check if the key include the date data
+                if (date = hourdate[1] + hourdate[2])
+                {
+                    //put the localstorage item in theNotes
+                    theNotes.push(localStorage);
+                }
+                if (localStorage.key(i).includes(location.search))
+                {
+                    //put the localstorage item in theNotes
+                    theNotes.push(localStorage);
+                }
+            }  
+        }*/
+
+       
+
+        //clean the old notes
+        function cleanRecord() {
+            for (row = 0; row < 25; row++)
+            {
+                if (row < 10) {
+                    document.getElementById("tr0" + row).style.backgroundColor = "lavender";
+                    document.getElementById("tr0" + row).style.color = "black";
+                }
+                else
+                {
+                    document.getElementById("tr" + row).style.backgroundColor = "lavender";
+                    document.getElementById("tr" + row).style.color = "black";
+                }
+            }
+        }
+
+        //mark the time for one note
+        function overLay(layerId, keyNumber) {
+           
+            //display the overlayer 
+            document.getElementById("overlay" + layerId).style.display = "block";           
+            //find the time span
+            // timespan = localStorage.key(keyNumber).split(" ")[0];
+            timespan = localStorage.key(keyNumber);
+            //test
+            //document.getElementById("tr00").innerHTML = localStorage.key(keyNumber);
+            //find the from and to times
+            hourF = timespan.substr(0, 2);
+            minuteF = timespan.substr(3, 2);
+            hourT = timespan.substr(6, 2);
+            minuteT = timespan.substr(9, 2);
+            if (hourF == "") {
+                hourF = "00";
+            }
+            if (hourT == "") {
+                hourT = "00";
+            }
+            if (minuteF == "") {
+                minuteF = "00";
+            }
+            if (minuteT == "")
+            {
+                minuteT = "00";
+            }
+            //test
+            //document.getElementById("c0").innerHTML = localStorage.key(5);
+            //write the note
+            document.getElementById("n" + hourF).innerHTML = localStorage.key(keyNumber) + "  " + localStorage.getItem(localStorage.key(keyNumber));          
+            //mark the note rows
+            for (redRow = parseInt(hourF) ; redRow <= parseInt(hourT); redRow++)
+            {
+                if (redRow < 10) {
+                    document.getElementById("tr0" + redRow).style.color = "red";
+                }
+                else
+                {
+                    document.getElementById("tr" + redRow).style.color = "red";
+                }
+                //document.getElementById("tr" + hourT).style.color = "red";
+            }
+            //check minutes of the first hour
+            //check about minuteF 
+            //document.getElementById("overlay" + layerId).style.top = (24 - hourF) * 60 - minuteF;
+            //every 2 minutes is 1 px 
+            document.getElementById("overlay" + layerId).style.height = ((parseInt(hourT) - parseInt(hourF)) * 33 + (parseInt(minuteT) - parseInt(minuteF))/2).toString() + "px";
+            document.getElementById("overlay" + layerId).style.top = ((parseInt(hourF) * 33 + parseInt(minuteF) / 2 + 10)).toString() + "px";
+           
+            //document.getElementById("overlay" + layerId).style.bottom = (((24 - parseInt(hourT)) * 40 - parseInt(minuteT))/2 - 20).toString() + "px";
+            document.getElementById("overlay" + layerId).style.zIndex = 0;
+            
+        }
+
+        //mark the time for one note
+        function markNotes() {
+            
+            //get the quried date
+            var queriedTime = getDate();
+            var cleanDate = queriedTime.replace("???", "");
+            cleanDate = cleanDate.replace("??", "");
+            cleanDate = cleanDate.replace("?", "");
+            //test
+            //document.getElementById("c0").innerHTML = cleanDate;
+            
+            //initialize layerId
+            var theLayer = 0;
+            //remove the note from localStorage
+            /*
+            for (l = 0; l < localStorage.length; l++) {
+                localStorage.removeItem(localStorage.key(l));
+            }*/
+            //test
+            //document.getElementById("c0").innerHTML = localStorage.length;
+            //put on the layers to different notes
+            //mark the note rows
+            var nt;
+            for (nt = 0; nt < localStorage.length; nt++) {
+                if (localStorage.key(nt).includes(cleanDate)) {
+                    //test
+                    //document.getElementById("c0").innerHTML = nt;
+                    overLay(theLayer, nt);
+                    theLayer++;
+                }
+            }
+            
+        }
+    </script>  
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+	<meta charset="utf-8" />
+</head>
+<body>
+
+    <div class="overlay" id="overlay0">
+    </div>
+    <div class="overlay" id="overlay1">
+    </div>
+    <div class="overlay" id="overlay2">
+    </div>
+    <div class="overlay" id="overlay3">
+    </div>
+    <div class="overlay" id="overlay4">
+    </div>
+    <div class="overlay" id="overlay5">
+    </div>
+    <div class="overlay" id="overlay6">
+    </div>
+    <div class="overlay" id="overlay7">
+    </div>
+    <div class="overlay" id="overlay8">
+    </div>
+    <div class="overlay" id="overlay9">
+    </div>
+    <div class="overlay" id="overlay10">
+    </div>
+    <div class="overlay" id="overlay11">
+    </div>
+    <div class="overlay" id="overlay12">
+    </div>
+    <div class="overlay" id="overlay13">
+    </div>
+    <div class="overlay" id="overlay14">
+    </div>
+    <div class="overlay" id="overlay15">
+    </div>
+    <div class="overlay" id="overlay16">
+    </div>
+    <div class="overlay" id="overlay17">
+    </div>
+    <div class="overlay" id="overlay18">
+    </div>
+    <div class="overlay" id="overlay19">
+    </div>
+    <div class="overlay" id="overlay20">
+    </div>
+    <div class="overlay" id="overlay21">
+    </div>
+    <div class="overlay" id="overlay22">
+    </div>
+    <div class="overlay" id="overlay23">
+    </div>
+    <div class="overlay" id="overlay24">
+    </div>
+    <div class="overlay" id="overlay25">
+    </div>
+    <div class="overlay" id="overlay26">
+    </div>
+    <div class="overlay" id="overlay27">
+    </div>
+    <div class="overlay" id="overlay28">
+    </div>
+    <div class="overlay" id="overlay29">
+    </div>
+    <div class="overlay" id="overlay30">
+    </div>
+    <div class="overlay" id="overlay31">
+    </div>
+    <div class="overlay" id="overlay32">
+    </div>
+    <div class="overlay" id="overlay33">
+    </div>
+    <div class="overlay" id="overlay34">
+    </div>
+    <div class="overlay" id="overlay35">
+    </div>
+    <div class="overlay" id="overlay36">
+    </div>
+    <div class="overlay" id="overlay37">
+    </div>
+    <div class="overlay" id="overlay38">
+    </div>
+    <div class="overlay" id="overlay39">
+    </div>
+    <div class="overlay" id="overlay40">
+    </div>
+    <div class="overlay" id="overlay41">
+    </div>
+    <div class="overlay" id="overlay42">
+    </div>
+    <div class="overlay" id="overlay43">
+    </div>
+    <div class="overlay" id="overlay44">
+    </div>
+    <div class="overlay" id="overlay45">
+    </div>
+    <div class="overlay" id="overlay46">
+    </div>
+    <div class="overlay" id="overlay47">
+    </div>
+    <div class="overlay" id="overlay48">
+    </div>
+    <div class="overlay" id="overlay49">
+    </div>
+    <div class="overlay" id="overlay50">
+    </div>
+    <table class="table" style="width: 500px; background-color: lavender; border-collapse: collapse">
+        <tr id="tr00">
+            <td id="c0" style="width: 10%; vertical-align: top">0:00</td>
+            <td id="n00"></td><td id="icon0" style="width: 10%" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px" ></i></td>
+        </tr>
+        <tr id="tr01">
+            <td id="c1" style="width: 10%; vertical-align: top">1:00</td>
+            <td id="n01" ></td><td id="icon1" onclick="noteTb(this)" ><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr02">
+            <td id="c2" style="width: 10%; vertical-align: top">2:00</td>
+            <td id="n02"></td><td id="icon2" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr03">
+            <td id="c3" style="width: 10%; vertical-align: top">3:00</td>
+            <td id="n03"></td><td id="icon3" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr04">
+            <td id="c4" style="width: 10%; vertical-align: top">4:00</td>
+            <td id="n04"></td><td id="icon4" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr05">
+            <td id="c5" style="width: 10%; vertical-align: top">5:00</td>
+            <td id="n05"></td><td id="icon5" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr06">
+            <td id="c6" style="width: 10%; vertical-align: top">6:00</td>
+            <td id="n06"></td><td id="icon6" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr07">
+            <td id="c7" style="width: 10%; vertical-align: top">7:00</td>
+            <td id="n07"></td><td id="icon7" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr08">
+            <td id="c8" style="width: 10%; vertical-align: top">8:00</td>
+            <td id="n08"></td><td id="icon8" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr09">
+            <td id="c9" style="width: 10%; vertical-align: top">9:00</td>
+            <td id="n09"></td><td id="icon9" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr10">
+            <td id="c10" style="width: 10%; vertical-align: top">10:00</td>
+            <td id="n10"></td><td id="icon10" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr11">
+            <td id="c11" style="width: 10%; vertical-align: top">11:00</td>
+            <td id="n11"></td><td id="icon11" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr12">
+            <td id="c12" style="width: 10%; vertical-align: top">12:00</td>
+            <td id="n12"></td><td id="icon12" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr13">
+            <td id="c13" style="width: 10%; vertical-align: top">13:00</td>
+            <td id="n13"></td><td id="icon13" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr14">
+            <td id="c14" style="width: 10%; vertical-align: top">14:00</td>
+            <td id="n14"></td><td id="icon14" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr15">
+            <td id="c15" style="width: 10%; vertical-align: top">15:00</td>
+            <td id="n15"></td><td id="icon15" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr16">
+            <td id="c16" style="width: 10%; vertical-align: top">16:00</td>
+            <td id="n16"></td><td id="icon16" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr17">
+            <td id="c17" style="width: 10%; vertical-align: top">17:00</td>
+            <td id="n17"></td><td id="icon17" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr18">
+            <td id="c18" style="width: 10%; vertical-align: top">18:00</td>
+            <td id="n18"></td><td id="icon18" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr19">
+            <td id="c19" style="width: 10%; vertical-align: top">19:00</td>
+            <td id="n19"></td><td id="icon19" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr20">
+            <td id="c20" style="width: 10%; vertical-align: top">20:00</td>
+            <td id="n20"></td><td id="icon20" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr21">
+            <td id="c21" style="width: 10%; vertical-align: top">21:00</td>
+            <td id="n21"></td><td id="icon21" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr22">
+            <td id="c22" style="width: 10%; vertical-align: top">22:00</td>
+            <td id="n22"></td><td id="icon22" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr23">
+            <td id="c23" style="width: 10%; vertical-align: top">23:00</td>
+            <td id="n23"></td><td id="icon23" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+        <tr id="tr24">
+            <td id="c24" style="width: 10%; vertical-align: top">24:00</td>
+            <td id="n24"></td>
+            <td id="icon24" onclick="noteTb(this)"><i class="fa fa-plus-circle" style="font-size: 22px"></i></td>
+        </tr>
+    </table> 
+    <script>
+     
+        //clean the old notes
+        cleanRecord();
+        //mark the past hours
+        markPastH();
+        //if there is query string, mark the time of a note
+        if (location.search != "") {
+           
+            markNotes();
+        }
+    </script>
+</body>
+</html>

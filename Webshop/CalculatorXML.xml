@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<operations>
+  <variables>
+    <variable>
+      <name>a</name>
+      <value>7</value>
+    </variable>
+    <variable>
+      <name>b</name>
+      <value>0</value>
+    </variable>
+    <variable>
+      <name>c</name>
+      <value>7</value>
+    </variable>
+  </variables>
+  <outputs>
+    <output>
+      <inpput>a = 5</inpput>
+      <result>a  = 5</result>
+    </output>
+    <output>
+      <inpput>b = a + 5</inpput>
+      <result>b  = 10</result>
+    </output>
+    <output>
+      <inpput>a = 6</inpput>
+      <result>a  = 6</result>
+    </output>
+    <output>
+      <inpput>b=1</inpput>
+      <result>b = 1</result>
+    </output>
+    <output>
+      <inpput>c=a+b</inpput>
+      <result>c = 7</result>
+    </output>
+    <output>
+      <inpput>a = 7</inpput>
+      <result>a  = 7</result>
+    </output>
+    <output>
+      <inpput>b = 0</inpput>
+      <result>b  = 0</result>
+    </output>
+    <output>
+      <inpput>c = a + b</inpput>
+      <result>c  = 7</result>
+    </output>
+  </outputs>
+</operations>
