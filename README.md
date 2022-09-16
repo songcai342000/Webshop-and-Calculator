@@ -1,2 +1,4 @@
-WebShop is written in Asp.Net 4.6.7.
-The project includes commodity lists in different categories, shopping cart, the list of shopping summery, Thai Key  
+WebShop is written in Asp.Net 4.5.2.
+The project includes commodity lists in different categories, shopping cart, the list of shopping summery, self-made tables of log in, log out, profile, password recover, AES encryption, etc. Two roles are implied to the application, the administrator can manage data of the commodity in the warehouse and data of the vendors, create sales report, etc. The program includes also function of automatical ordering.   
+A simple calculator is also written in the same solution. The calculator check format of input data, processes simple calculation, pick up/save data from/to a XML file. The codes of the calculator are located in Calculator.aspx, Calculator.aspx.cs and CalculatorXML.xml.
+The construction of the project in Github is not correct, due to that it couldn't be loaded up directly as a whole project from Visual Studio 2019. Probably it is because the old project was not saved by a way suitable to Git using. The project file and other files of the project were loaded up seperately. 
