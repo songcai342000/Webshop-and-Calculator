@@ -1,4 +1,4 @@
 WebShop-Website is written in Asp.Net 4.5.2.
 The project includes commodity lists in different categories, shopping cart, the list of shopping summery, self-made tables of log in, log out, logging status, profile, password recovery, AES encryption, etc. Two roles are implied to the application, the administrator can manage data of the commodity in the warehouse and data of the vendors, create sales report, etc. The program includes also functions of automatical ordering.   
 A simple calculator is also written in the same solution. The calculator checks format of input data, processes simple calculation, picks up/save data from/to a XML file. The codes are located in Calculator.aspx, Calculator.aspx.cs and CalculatorXML.xml.
-The construction of the project in Github is not correct, due to that the old project was not saved by a way suitable to Git using. The project file and other files were loaded up seperately. 
+The schema of the project in Github is probably not correct, due to that the old project was not saved by a way suitable to Git using. The .sln file and other files were loaded up seperately. 
